@@ -1,0 +1,68 @@
+Document Information:
+
+Original :
+  - Average Document Length: 1102.81
+  - Total Term Frequency: 10811997
+  - Total Number of Documents: 9804
+
+After removing stop words :
+  - Average Document Length: 634.80
+  - Total Term Frequency: 6223560
+  - Total Number of Documents: 9804
+
+After stemming :
+  - Average Document Length: 1102.81
+  - Total Term Frequency: 10811997
+  - Total Number of Documents: 9804
+
+After removing stop words and stemming :
+  - Average Document Length: 1102.81
+  - Total Term Frequency: 10811997
+  - Total Number of Documents: 9804
+
+
+
+
+----- Extracting using tags -------
+
+To evaluate the queries based on each part of the xml document taking in consideration the xml tags, we need first to find the xml-tree of the files we have.
+And to do so, we have used the lxml module which extends the ElementTree python Api  to offer support for XPath, XML Schema and XSLT.
+If we try to extract the tree for each file we will have results like this : 
+['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/table[1]/row[2]/col[3]/p[2]/list[1]/entry[1]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/table[1]/row[2]/col[3]/p[2]/list[1]/entry[2]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/table[1]/row[2]/col[3]/p[2]/list[1]/entry[3]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/table[1]/row[2]/col[3]/p[2]/list[1]/entry[4]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/table[1]/row[2]/col[3]/p[2]/list[1]/entry[5]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]/p[6]/list[2]/entry[6]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]/p[6]/list[2]/entry[7]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]/p[6]/list[2]/entry[8]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]/p[6]/list[2]/entry[9]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]/p[6]/list[2]/entry[10]'], 'link': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[3]/link[1]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[3]/village[1]/link[2]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[3]/link[3]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/region[1]/administrative_district[1]/location[1]/state[1]/district[1]/link[4]', '/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/system[1]/economy[1]/group[1]/link[5]'], 'village': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[3]/village[1]'], 'region': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/region[1]'], 'administrative_district': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/region[1]/administrative_district[1]'], 'location': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/region[1]/administrative_district[1]/location[1]'], 'state': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/region[1]/administrative_district[1]/location[1]/state[1]'], 'district': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/region[1]/administrative_district[1]/location[1]/state[1]/district[1]'], 'system': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/system[1]'], 'economy': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/system[1]/economy[1]'], 'group': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/p[4]/system[1]/economy[1]/group[1]'], 'sec': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]'], 'st': ['/article[1]/structure[1]/building[1]/artifact[1]/restaurant[1]/bdy[1]/sec[1]/st[1]']}
+
+This is how the files are organized. 
+
+
+We still need to fix some issues in the code, we have some errors on the code, we have to add input error management. 
+
+But we can get the exact granularity for exemple for the bdy and p tags we have the results : 
+['bdy', 'p']
+YES bdy in tree
+['/article[1]/entity[1]/bdy[1]']
+YES p in tree
+['/article[1]/entity[1]/bdy[1]/sec[1]/p[1]', '/article[1]/entity[1]/bdy[1]/sec[2]/p[2]', '/article[1]/entity[1]/bdy[1]/sec[3]/p[3]', '/article[1]/entity[1]/bdy[1]/sec[3]/p[4]', '/article[1]/entity[1]/bdy[1]/sec[4]/p[5]', '/article[1]/entity[1]/bdy[1]/sec[5]/p[6]', '/article[1]/entity[1]/bdy[1]/sec[6]/p[7]']
+
+
+We will have to evaluate the queries only on the data inside the tags extracted from the tree for exemple /article[1]/entity[1]/bdy[1]/sec[1]/p[1].
+
+Ajouter les stats pour comparer entre practice 4 et 5. Magp ?  
+Extraction d'element XML et effectuer les runs. 
+Fix number of stop list elements. 
+Eviter loverlapping.
+Regler les performances en termes de Magp
+Courbe de Magp et courbe de R/P (Rappel/Precision --> pour diffenrencier des systèmes au taux de rappel qui se casse rapidement.)
+possible de paralleliser (multi-threading)? 
+
+
+
+{'article': 1, 'bdy': 1, 'p': 1}
+{'article': 1, 'bdy': 1, 'p': 2}
+{'article': 1, 'bdy': 1, 'sec': 1, 'p': 3}
+{'article': 1, 'bdy': 1, 'sec': 1, 'p': 4}
+{'article': 1, 'bdy': 1, 'sec': 1, 'p': 5}
+{'article': 1, 'bdy': 1, 'sec': 2, 'p': 6}
+{'article': 1, 'bdy': 1, 'sec': 2, 'ss1': 1, 'p': 7}
+{'article': 1, 'bdy': 1, 'sec': 2, 'ss1': 2, 'p': 8}
+{'article': 1, 'bdy': 1, 'sec': 3, 'p': 9}
+{'article': 1, 'bdy': 1, 'sec': 4, 'p': 10}
+{'article': 1, 'bdy': 1, 'sec': 4, 'p': 11}
