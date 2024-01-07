@@ -47,7 +47,6 @@ class Manage:
     def export_file(self, doc_list, query_id, run_id, weighting_function, granularity, stop, stem, parameters):
         if list is None:
             exit
-
         if parameters != 'noparameters':
             parm = ''
             for key, value in parameters.items():
@@ -59,7 +58,8 @@ class Manage:
         with open(f'../results/InessAliMohammedFatiha_{run_id}_{weighting_function}_{file_granularity}_{stop}_{stem}{parm}.txt', 'a') as file:
             for i in range(0, len(doc_list)):
                 # Include dynamic granularity information in the output line
-                file.write(f"{query_id} Q0 {doc_list[i][0]} {i+1} {doc_list[i][1]} InessAliMohammedFatiha /article[1]/{granularity}\n")
+                file.write(f"{query_id} Q0 {doc_list[i][0]} {i+1} {doc_list[i][1]} InessAliMohammedFatiha /{granularity}\n")
+
 
     def get_run_counter(self):
         counter_file_path = '../resources/run_counter.txt'
