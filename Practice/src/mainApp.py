@@ -9,16 +9,19 @@ class MainApp:
         self.extraction_method = extraction_method
         self.folder_path = folder_path
         self.preprocessor = Preprocessor(self.folder_path)
-        self.index, self.term_frequency = self.preprocessor.preprocess_files(self.extraction_method) # case tags -> list
-        self.cleaner = FileCleaning(self.index, self.term_frequency)
+        self.result_data = self.preprocessor.preprocess_files(self.extraction_method) # case tags -> list
+        self.cleaner = FileCleaning(self.result_data)
+        self.results_stop = self.cleaner.remove_stop_words()
+       
         self.stop_d = ""
         self.stem_d = ""
-        self.manage = Manage()
-        self.algorithms = Algorithms()
-        self.doc_lengths = self.preprocessor.get_doc_length(self.index, self.term_frequency)
+        #self.manage = Manage()
+        #self.algorithms = Algorithms()
+        #self.doc_lengths = self.preprocessor.get_doc_length(self.index, self.term_frequency)
 
     def process_result_stop_words(self):
         cleaner = FileCleaning(self.index, self.term_frequency)
+        
         index_without_stopwords, term_frequency_without_stopwords, nbr_stopList = cleaner.remove_stopwords()
         self.index, self.term_frequency = index_without_stopwords, term_frequency_without_stopwords
         self.stop_d = f"stop{nbr_stopList}"
@@ -66,11 +69,14 @@ class MainApp:
     def update_counter(self, run_index):
         self.manage.update_counter(run_index)
 
+ 
+"""
 
     def run(self):
-        n = len(self.doc_lengths)
+        self.doc_lengths = 1
+        #n = len(self.doc_lengths)
         while True:
-            run_index = self.manage.get_run_counter()
+            #run_index = self.manage.get_run_counter()
             stop_des = int(input("Do you want to remove the stop words:\n1. Yes\n2. No\n"))
             if stop_des == 1:
                 self.process_result_stop_words()
@@ -79,10 +85,10 @@ class MainApp:
 
             stem_des = int(input("Do you want to stem the tokens:\n1. Yes\n2. No\n"))
             if stem_des == 1:
-                self.process_result_stem()
+                self.process_result_stem(re)
             else:
                 self.stem_d = "nostem"
-            avdl = sum(self.doc_lengths.values()) / n
+            avdl = sum(self.doc_lengths.values()) / 10
             dl = self.doc_lengths
 
             all_querys = self.load_queries()
@@ -111,7 +117,7 @@ class MainApp:
             if run_again != "yes":
                 break
 
-
+"""
 
 if __name__ == "__main__":
     folder_path = "../resources/test/"
@@ -130,4 +136,4 @@ if __name__ == "__main__":
     
     app = MainApp(folder_path,extraction_method)
             
-    app.run()
+    #app.run()

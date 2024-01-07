@@ -133,33 +133,33 @@ class Preprocessor:
                     #docno has many tags
                     result_dicts["metadata"].append(current_dict)
         return  result_dicts
-
     
 
     def preprocess_files(self, extraction_method):
         print(f"Preprocessing files for case {extraction_method}")
         index = defaultdict(set)
         term_frequency = defaultdict(lambda: defaultdict(int))
-
-        tags = None
-        limit = 0
+        limit = 5
+        tags = ["article"]
+        results = []
         if extraction_method == "tags":
-            tags = input("Enter tags separated with a comma to extract content: ").split(',')
-            limit = 5
-        else:
-            limit = 2
+            tags = input("Enter tags separated with a comma to extract content: ").split(',')   
+            # ['bdy', 'p']
+        
         file_counter = 0 
         for filename in os.listdir(self.folder_path):
             if filename.endswith(".xml"):
+                print(filename)
                 file_path = os.path.join(self.folder_path, filename)
-                if extraction_method == "tags":
-                     result_contents = self.extract_from_tags(file_path, tags)
 
+                if extraction_method == "tags":
+                    result_contents = self.extract_from_tags(file_path, tags)
                 else:
-                     result_contents = self.extract_from_tags(file_path,["article"])
+                    result_contents = self.extract_from_tags(file_path, tags)
 
                 file_counter += 1
                 if file_counter >= limit:
                     break
-        
-        return  result_contents
+                results.append(result_contents)
+
+        return  results
