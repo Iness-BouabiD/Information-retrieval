@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 class Preprocessor:
     def __init__(self, folder_path):
         self.folder_path = folder_path
+        
 
 
     # Extract from the whole document without taking in consideration the tags
@@ -118,57 +119,45 @@ class Preprocessor:
                     current_dict["hierarchies"].append(occurrence)
 
                     start_tag = re.escape(current_dict["start_tag"])
-                    end_tag = re.escape(current_dict["end_tag"])
-                    
-                    
-                    print(f"XPath expression: {f'//{start_tag}//*'}")
-                    
-                  
                     root = etree.fromstring(unescape(data).encode('utf-8'), parser=etree.XMLParser(resolve_entities=False))
                     elements = root.xpath(f'//{start_tag}//*')
                   
-                    print(elements)
-
                     for element in elements:
-                        # Extract content from the element
                         content = etree.tostring(element, encoding='unicode', method='text')
                         current_dict["content"] = content.strip()
-                        print("*******************")
-                        print(current_dict["content"])
-                        print("*******************")
 
-                    result_dicts["metadata"].append(current_dict)
-                    
-        
-        return docno
+                    result_dicts["metadata"].append(current_dict)        
+        return docno, result_dicts
 
 
-
-
-
-
+    def process_result_tags(self, result_dicts):
+        index = defaultdict(set)
+        term_frequency = defaultdict(lambda: defaultdict(int))
+        docno = result_dicts["docno"]
+        for metadata in result_dicts["metadata"]:
+            content = metadata["content"]
+            terms = content.split()
+            for term in terms:
+                index[term].add(docno)
+                term_frequency[term][docno] += 1
+        return index, term_frequency
 
     def preprocess_files(self,extraction_method):
         print(f"Preprocessing files for case {extraction_method}")
         index = defaultdict(set)
         term_frequency = defaultdict(lambda: defaultdict(int))
         if extraction_method == "tags" :
-            
             tags = input("Enter tags separated with a comma to extract content: ").split(',')
             file_counter = 0  #Counter
             limit = 5
             for filename in os.listdir(self.folder_path):
                 if filename.endswith(".xml"):
                     file_path = os.path.join(self.folder_path, filename)
-                    docno = self.extract_from_tags(file_path,tags)
-                    print(docno)
-                   
+                    docno, result_contents = self.extract_from_tags(file_path,tags)
+                    print(result_contents.get("metadata"))
                     file_counter += 1  
-
                     if file_counter >= limit:  
                         break
-
-###################### Working ####################
         else:
             
             file_counter = 0  #Counter
@@ -181,7 +170,6 @@ class Preprocessor:
                     for term in terms:
                         index[term].add(docno)
                         term_frequency[term][docno] += 1
-
                     file_counter += 1  
 
                     if file_counter >= limit:  

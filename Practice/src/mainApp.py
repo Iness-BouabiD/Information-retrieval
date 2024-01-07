@@ -71,7 +71,6 @@ class MainApp:
         n = len(self.doc_lengths)
         while True:
             run_index = self.manage.get_run_counter()
-
             stop_des = int(input("Do you want to remove the stop words:\n1. Yes\n2. No\n"))
             if stop_des == 1:
                 self.process_result_stop_words()
@@ -130,7 +129,6 @@ if __name__ == "__main__":
     else :
         print("Invalid choice. Choose 1 or 2")
     
-    print(extraction_method)
     app = MainApp(folder_path,extraction_method)
             
     app.run()
