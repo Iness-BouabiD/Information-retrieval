@@ -10,27 +10,15 @@ from bs4 import BeautifulSoup
 class Preprocessor:
     def __init__(self, folder_path):
         self.folder_path = folder_path
-        
-
-
-    # Extract from the whole document without taking in consideration the tags
-    def extract_doc_content(self, file_path):
-        tree_structure = self.build_tree_structure(file_path)
-        
-        with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            docno = os.path.splitext(os.path.basename(file_path))[0]
-            content = re.sub(r'<[^>]+>', '', content)  # we don't use XML tags in this case
-        return docno, content
-
+    
+   
     def get_doc_length(self, index, term_frequency):
+        print(term_frequency)
         doc_length = defaultdict(int)
         for term, postings_list in index.items():
             for docno in postings_list:
                 doc_length[docno] += term_frequency[term][docno]
         return doc_length
-    
-
 
     #Extracting the tree for getting tags
     def build_tree_structure(self, file_path):
@@ -45,11 +33,12 @@ class Preprocessor:
         return tree_structure
     
 
-
+   # <article> <bdy> <p> <...> </p> <p> </p> </byd> 
+    # /article/bdy[1]/p[1]
+    # /article/bdy[1]/p[2]
     def _traverse_tree(self, element, tree_structure, parent_path=""):
         current_path = f"{parent_path}/{element.tag}[{len(tree_structure[element.tag]) + 1}]"
         tree_structure[element.tag].append(current_path)
-
         for child in element:
             self._traverse_tree(child, tree_structure, current_path)
 
@@ -80,7 +69,7 @@ class Preprocessor:
                 else:
                     formatted_path += f"{tag}/"
             formatted_paths.append(formatted_path.rstrip("/"))
-            print(formatted_paths)
+           
         return formatted_paths
     
 
@@ -91,88 +80,86 @@ class Preprocessor:
         tag_indices = {}
         for tag, index in matches:
             tag_indices[tag] = int(index)
-
         return tag_indices
 
+    #/article/bdy[1]/p[1]/sec[1] 
     
-
     def extract_from_tags(self, file_path, tags):
+        local_index = defaultdict(set)
+        local_term_frequency = defaultdict(lambda: defaultdict(int))
+
         tree_structure = self.build_tree_structure(file_path)
+    
         with open(file_path, 'r', encoding='utf-8') as file:
             data = file.read()
         data = data.replace('&', '&amp;')
+
         docno = os.path.splitext(os.path.basename(file_path))[0]
-        result_dicts = {"docno":"", "metadata":[]}
+        result_dicts = {"docno": "", "metadata": []}
         result_dicts["docno"] = docno
+         
+        # ranking -> p ==> /article/p1 ... 
         for tag in tags:
+
             if tag in tree_structure:
-                #print(tree_structure[tag])
+                
                 occurrences = tree_structure[tag]
                 for occurrence in occurrences:
-                    tags_indices = self.extract_tags_indices(occurrence)
-                    current_dict = {"hierarchies": [], "start_tag": "", "end_tag": "", "content": ""}
                     
-                    for tag_name, index in tags_indices.items():
-                        current_dict["start_tag"] += f"/{tag_name}"
-                        current_dict["end_tag"] += f"/{tag_name}"
+                    current_dict = {"hierarchies": "", "content": "", "indexation": []}
+                    # <p> bla bla iness taha </p> 
+                    # indexation['bla'] = [ { "index" : "bla" , "term_frequency": 2 } ]
+         
+                    current_dict["hierarchies"]=occurrence
 
-                    current_dict["hierarchies"].append(occurrence)
-
-                    start_tag = re.escape(current_dict["start_tag"])
+                    # un seul doc : ['/p[1]', '/p[2]']
                     root = etree.fromstring(unescape(data).encode('utf-8'), parser=etree.XMLParser(resolve_entities=False))
-                    elements = root.xpath(f'//{start_tag}//*')
-                  
+                    elements = root.xpath(occurrence)
+
+
                     for element in elements:
                         content = etree.tostring(element, encoding='unicode', method='text')
                         current_dict["content"] = content.strip()
+                        indexation = {"index": {}, "term_frequency": {}}
+                        terms = content.split()
+                        for term in terms:
+                            if indexation['index'] == {} or indexation["index"].get(term) is None:
+                                indexation["index"][term] = local_index[term]
+                                indexation["term_frequency"][term] = local_term_frequency[term]
+                            local_index[term].add(docno)
+                            local_term_frequency[term][docno] += 1
+                        current_dict["indexation"].append(indexation)
 
-                    result_dicts["metadata"].append(current_dict)        
-        return docno, result_dicts
+                    #docno has many tags
+                    result_dicts["metadata"].append(current_dict)
+        return  result_dicts
 
+    
 
-    def process_result_tags(self, result_dicts):
-        index = defaultdict(set)
-        term_frequency = defaultdict(lambda: defaultdict(int))
-        docno = result_dicts["docno"]
-        for metadata in result_dicts["metadata"]:
-            content = metadata["content"]
-            terms = content.split()
-            for term in terms:
-                index[term].add(docno)
-                term_frequency[term][docno] += 1
-        return index, term_frequency
-
-    def preprocess_files(self,extraction_method):
+    def preprocess_files(self, extraction_method):
         print(f"Preprocessing files for case {extraction_method}")
         index = defaultdict(set)
         term_frequency = defaultdict(lambda: defaultdict(int))
-        if extraction_method == "tags" :
-            tags = input("Enter tags separated with a comma to extract content: ").split(',')
-            file_counter = 0  #Counter
-            limit = 5
-            for filename in os.listdir(self.folder_path):
-                if filename.endswith(".xml"):
-                    file_path = os.path.join(self.folder_path, filename)
-                    docno, result_contents = self.extract_from_tags(file_path,tags)
-                    print(result_contents.get("metadata"))
-                    file_counter += 1  
-                    if file_counter >= limit:  
-                        break
-        else:
-            
-            file_counter = 0  #Counter
-            limit = 2
-            for filename in os.listdir(self.folder_path):
-                if filename.endswith(".xml"):
-                    file_path = os.path.join(self.folder_path, filename)
-                    docno, content = self.extract_doc_content(file_path)
-                    terms = content.split()
-                    for term in terms:
-                        index[term].add(docno)
-                        term_frequency[term][docno] += 1
-                    file_counter += 1  
 
-                    if file_counter >= limit:  
-                        break
-        return index, term_frequency
-    
+        tags = None
+        limit = 0
+        if extraction_method == "tags":
+            tags = input("Enter tags separated with a comma to extract content: ").split(',')
+            limit = 5
+        else:
+            limit = 2
+        file_counter = 0 
+        for filename in os.listdir(self.folder_path):
+            if filename.endswith(".xml"):
+                file_path = os.path.join(self.folder_path, filename)
+                if extraction_method == "tags":
+                     result_contents = self.extract_from_tags(file_path, tags)
+
+                else:
+                     result_contents = self.extract_from_tags(file_path,["article"])
+
+                file_counter += 1
+                if file_counter >= limit:
+                    break
+        
+        return  result_contents

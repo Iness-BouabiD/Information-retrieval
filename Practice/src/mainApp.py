@@ -9,7 +9,7 @@ class MainApp:
         self.extraction_method = extraction_method
         self.folder_path = folder_path
         self.preprocessor = Preprocessor(self.folder_path)
-        self.index, self.term_frequency = self.preprocessor.preprocess_files(self.extraction_method)
+        self.index, self.term_frequency = self.preprocessor.preprocess_files(self.extraction_method) # case tags -> list
         self.cleaner = FileCleaning(self.index, self.term_frequency)
         self.stop_d = ""
         self.stem_d = ""
@@ -19,7 +19,7 @@ class MainApp:
 
     def process_result_stop_words(self):
         cleaner = FileCleaning(self.index, self.term_frequency)
-        index_without_stopwords, term_frequency_without_stopwords,nbr_stopList = cleaner.remove_stopwords()
+        index_without_stopwords, term_frequency_without_stopwords, nbr_stopList = cleaner.remove_stopwords()
         self.index, self.term_frequency = index_without_stopwords, term_frequency_without_stopwords
         self.stop_d = f"stop{nbr_stopList}"
 
@@ -82,7 +82,6 @@ class MainApp:
                 self.process_result_stem()
             else:
                 self.stem_d = "nostem"
-
             avdl = sum(self.doc_lengths.values()) / n
             dl = self.doc_lengths
 
@@ -115,12 +114,12 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    folder_path = "../resources/XML-Coll-withSem/XML-Coll-withSem/"
+    folder_path = "../resources/test/"
 
     def extract_method_choice():
         return input("Choose extraction method:\n1. Whole document\n2. Extract from specific tags\n").lower()
 
-    print(folder_path)
+
     extraction_method_choice = extract_method_choice()
     if extraction_method_choice =="1":
         extraction_method ="whole_document"
