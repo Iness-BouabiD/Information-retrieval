@@ -89,6 +89,7 @@ class Preprocessor:
 
 
     def extract_from_tags(self, content, tags, tree_structure, docno):
+        #Problem here To fix
         print(f"EXTRACT FROM TAGS ******************************************************")
         tags_with_hierarchy = []  # List to store dictionaries of tags and content
         content_test = []
