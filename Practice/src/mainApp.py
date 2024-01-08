@@ -35,8 +35,8 @@ class MainApp:
     def calculate_smart_ltn_weights(self,result_data):
         return self.algorithms.SmartLtn(result_data)
 
-    def calculate_smart_ltc_weights(self, result_data):
-        return self.algorithms.SmartLtc(result_data)
+    def calculate_smart_ltc_weights(self,smart_ltn_dict, result_data):
+        return self.algorithms.SmartLtc(smart_ltn_dict,result_data)
 
     def calculate_BM25_weights(self,result_data,k,b):
         return self.algorithms.BM25_weighting(result_data,k,b)
@@ -84,7 +84,14 @@ class MainApp:
         all_querys = self.load_queries()
 
         for run in range(1, 5):
-            
+            if run == 1:
+                smart_ltn = self.calculate_smart_ltn_weights(data_result)
+                smart_ltc = self.calculate_smart_ltc_weights(smart_ltn,data_result)
+                #self.query_processing("ltc", smart_ltc, all_querys, run_index)
+                #print(smart_ltc)
+                print("*******************************************************************")
+
+"""          
             if run == 1:
                 print("smart ltn")
                 smart_ltn = self.calculate_smart_ltn_weights(data_result)
@@ -92,13 +99,8 @@ class MainApp:
                 print(smart_ltn)
                 print("-------------------------------------------------------------------")
 """
-            elif run == 2:
-                smart_ltc = self.calculate_smart_ltc_weights(data_result)
-                #self.query_processing("ltc", smart_ltc, all_querys, run_index)
-                print(smart_ltc)
-                print("*******************************************************************")
 
-"""
+
 """
             elif run == 3:
                 print(f"{run}")
@@ -121,7 +123,7 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    folder_path = "../resources/XML-Coll-withSem/XML-Coll-withSem"
+    folder_path = "../resources/test"
 
     def extract_method_choice():
         return input("Choose extraction method:\n1. Whole document\n2. Extract from specific tags\n").lower()

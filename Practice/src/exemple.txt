@@ -1,27 +1,6 @@
-[{'docno': '612', 'metadata': [{'hierarchies': '/article[1]/header[1]/categories[1]/category[1]', 'content': '', 'indexation': [{'index': {}, 'term_frequency': {}}]}, {'hierarchies': '/article[1]/header[1]/categories[1]/category[2]', 'content': 'statist articl link portal', 'indexation': [{'index': {'statist': {'612'}, 'articl': {'612'}, 'link': {'612'}, 'portal': {'612'}}, 'term_frequency': {'statist': defaultdict(<class 'int'>, {'612': 2}), 'articl': defaultdict(<class 'int'>, {'612': 2}), 'link': defaultdict(<class 'int'>, {'612': 1}), 'portal': defaultdict(<class 'int'>, {'612': 1})}}]}, {'hierarchies': '/article[1]/header[1]/categories[1]/category[3]', 'content': 'statist articl navig templat', 'indexation': [{'index': {'statist': {'612'}, 'articl': {'612'}, 'link': {'612'}, 'portal': {'612'}, 'navig': {'612'}, 'templat': {'612'}}, 'term_frequency': {'statist': defaultdict(<class 'int'>, {'612': 2}), 'articl': defaultdict(<class 'int'>, {'612': 2}), 'link': defaultdict(<class 'int'>, {'612': 1}), 'portal': defaultdict(<class 'int'>, {'612': 1}), 'navig': defaultdict(<class 'int'>, {'612': 1}), 'templat': defaultdict(<class 'int'>, {'612': 1})}}]}]
-
-
-
-statist
-0
-/article[1]/header[1]/categories[1]/category[1]
-articl
-0
-/article[1]/header[1]/categories[1]/category[1]
-link
-0
-/article[1]/header[1]/categories[1]/category[1]
-portal
-0
-/article[1]/header[1]/categories[1]/category[1]
-statist
-0
-/article[1]/header[1]/categories[1]/category[1]
-articl
-0
-/article[1]/header[1]/categories[1]/category[1]
-navig
-0
-/article[1]/header[1]/categories[1]/category[1]
-templat
-0
+ {'612': {'docno': '612', 'hierarchies': {'/article[1]/header[1]/categories[1]/category[2]': {'statist': 0, 'articl': 0, 'link': 0, 'portal': 0}, '/article[1]/header[1]/categories[1]/category[3]': {'statist': 0, 'articl': 0, 'navig': 0, 'templat': 0}}}, '627': {'docno': '627', 'hierarchies': {'/article[1]/header[1]/categories[1]/category[1]': {'agricultur': 0}, '/article[1]/header[1]/categories[1]/category[2]': {'articl': 0, 'specifically-mark': 0, 'weasel-word': 0, 'phrase': 0}}}, 
+ 
+ 
+ '717': {'docno': '717', 'hierarchies': {'/article[1]/state[1]/district[1]/country[1]/header[1]/categories[1]/category[1]': {'territori': 0, 'establish': 0, '1905': 0}, '/article[1]/state[1]/district[1]/country[1]/header[1]/categories[1]/category[2]': {'articl': 0, 'need': 0, 'addit': 0, 'refer': 0, 'februari': 0, '2008': 0}, '/article[1]/state[1]/district[1]/country[1]/header[1]/categories[1]/category[3]': {'provinc': 0, 'territori': 0, 'canada': 0}, '/article[1]/state[1]/district[1]/country[1]/header[1]/categories[1]/category[4]': {'alberta': 0}}}, 
+ 
+ '753': {'docno': '753', 'hierarchies': {'/article[1]/occupation[1]/profession[1]/header[1]/categories[1]/category[1]': {'actor': 0}, '/article[1]/occupation[1]/profession[1]/header[1]/categories[1]/category[2]': {'act': 0}, '/article[1]/occupation[1]/profession[1]/header[1]/categories[1]/category[3]': {'entertain': 0, 'occup': 0}, '/article[1]/occupation[1]/profession[1]/header[1]/categories[1]/category[4]': {'theatric': 0, 'profess': 0}}}})

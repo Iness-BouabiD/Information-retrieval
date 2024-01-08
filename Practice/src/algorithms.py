@@ -25,12 +25,12 @@ class Algorithms:
 
     def calculate_tf(self, term, metadata,docno):
         tf = metadata.get("indexation", [{}])[0]["term_frequency"].get(term, {}).get(docno)
-        print(f"term frequency of {term} is {tf} in docno {docno}")
+        
         return tf
     
     def calculate_df(self, term, data_result):
         df = sum(1 for result in data_result if any(term in metadata["indexation"][0]["index"] for metadata in result["metadata"]))
-        print(f"document frequency of the term {term} is {df}")
+        #print(f"document frequency of the term {term} is {df}")
         return df
         
 
@@ -77,28 +77,60 @@ class Algorithms:
 
     def somme_carre(self, smart_ltn_dict):
         sums = defaultdict(float)
-        for term, dictio in smart_ltn_dict.items():
-            for docno in dictio:
-                sums[docno] += (smart_ltn_dict[term][docno] ** 2)
+        for docno, doc_dict in smart_ltn_dict.items():
+            hierarchies_dict = doc_dict.get("hierarchies", {})
+            for hierarchy, term_weights in hierarchies_dict.items():
+                for term, weight in term_weights.items():
+                    sums[docno] += (weight ** 2)
 
         sums = dict(sorted(sums.items()))
         return sums
 
-    def SmartLtc(self, data_result):
-        smart_ltn_dict = self.SmartLtn(data_result)
-        smart_ltc_dict = defaultdict(lambda: defaultdict(float))
-        s = self.somme_carre(smart_ltn_dict)
+    def SmartLtc(self, smart_ltn_dict, data_result):
+        smart_ltc_dict = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
+        s = self.somme_carre(smart_ltn_dict)  # Calculate the sum of squares
+        print(s)
+        for result in data_result:
+            docno = result.get("docno", "")
+            hierarchies_dict = defaultdict(dict)
 
-        for term, dictio in smart_ltn_dict.items():
-            for docno in dictio:
-                tf = smart_ltn_dict[term][docno]
-                if s[docno] > 0:
-                    weight = self.calculate_SmartLtc_weight(tf, s[docno])
-                else:
-                    weight = 0
-                smart_ltc_dict[term][docno] = weight
+            for metadata in result.get("metadata", []):
+                hierarchies = metadata.get("hierarchies", "")
+                content = metadata.get("content", "")
+                terms = content.split()
+                for term in terms:
+                    tf = self.calculate_tf(term, metadata, docno)
+                    if docno in s:
+                        if s[docno] > 0:
+                            weight = self.calculate_SmartLtc_weight(tf, s[docno])
+                        else:
+                            weight = 0
+                    else:
+                        weight = 0
+                    hierarchies_dict[hierarchies][term] = weight
 
+            smart_ltc_dict[docno]["docno"] = docno
+            smart_ltc_dict[docno]["hierarchies"] = dict(hierarchies_dict)
+
+        print(smart_ltc_dict)
         return smart_ltc_dict
+
+
+    """
+        def smart_ltc_weighting(self,smart_ltn_dict):
+            smart_ltc_dict = defaultdict(lambda: defaultdict(float))
+            s = self.somme_carre(smart_ltn_dict)
+            for term, dictio in smart_ltn_dict.items():
+                for docno in dictio:
+                    tf = smart_ltn_dict[term][docno]
+                    if s[docno] > 0:
+                        weight = self.SmartLtc(tf, s[docno])
+                    else:
+                        weight = 0
+                    smart_ltc_dict[term][docno] = weight
+            return smart_ltc_dict
+    """
+
 
     def BM25_df(self, term, data_result):
         df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
