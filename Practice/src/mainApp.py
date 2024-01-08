@@ -77,6 +77,7 @@ class MainApp:
             data_result = self.cleaner.stop_words_and_stemming(stop=False, stem=True)
         else:
             self.stem_d = "nostem"
+            data_result = self.cleaner.stop_words_and_stemming(stop=False, stem= False)
         
         print(data_result)
         
@@ -90,12 +91,14 @@ class MainApp:
                 #self.query_processing("ltn", smart_ltn, all_querys, run_index)
                 print(smart_ltn)
                 print("-------------------------------------------------------------------")
-
+"""
             elif run == 2:
                 smart_ltc = self.calculate_smart_ltc_weights(data_result)
                 #self.query_processing("ltc", smart_ltc, all_querys, run_index)
                 print(smart_ltc)
                 print("*******************************************************************")
+
+"""
 """
             elif run == 3:
                 print(f"{run}")

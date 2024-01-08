@@ -46,6 +46,8 @@ class FileCleaning:
                 elif stop == True and stem == True:
                     filtered_stop = [term for term in terms if term.lower() not in stop_list]
                     filtered_terms = [stemmer.stem(term) for term in filtered_stop]
+                elif stop==False  and stem ==False:
+                    return self.result_data
 
                 metadata["content"] = ' '.join(filtered_terms)
 

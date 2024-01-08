@@ -139,7 +139,7 @@ class Preprocessor:
         print(f"Preprocessing files for case {extraction_method}")
         index = defaultdict(set)
         term_frequency = defaultdict(lambda: defaultdict(int))
-        limit = 5
+        limit = 60
         tags = ["article"]
         results = []
         if extraction_method == "tags":

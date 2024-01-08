@@ -23,14 +23,16 @@ class Algorithms:
         bm25tf = ((tf * (k + 1)) / ((k * ((1 - b) + (b * (dl / avdl)))) + tf))
         return bm25df * bm25tf
 
-    def calculate_tf(self, term, data_result):
-        tf = data_result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {}).get(data_result["docno"], 0)
+    def calculate_tf(self, term, metadata,docno):
+        tf = metadata.get("indexation", [{}])[0]["term_frequency"].get(term, {}).get(docno)
+        print(f"term frequency of {term} is {tf} in docno {docno}")
         return tf
-
-    def calculate_df(self, term, data_result):
-        df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
-        return df
     
+    def calculate_df(self, term, data_result):
+        df = sum(1 for result in data_result if any(term in metadata["indexation"][0]["index"] for metadata in result["metadata"]))
+        print(f"document frequency of the term {term} is {df}")
+        return df
+        
 
     def SmartLtn(self, data_result):
         smart_ltn_dict = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
@@ -39,32 +41,36 @@ class Algorithms:
         for result in data_result:
             docno = result.get("docno", "")
             hierarchies_dict = defaultdict(dict)
+
+            # Calculate document frequency for terms across the entire collection
+            doc_df_dict = {}  # Dictionary to store document frequency for the entire collection
             for metadata in result.get("metadata", []):
-                hierarchies = metadata.get("hierarchies")
                 content = metadata.get("content", "")
                 terms = content.split()
-                print(hierarchies)
 
                 for term in terms:
-                    
+                    doc_df_dict.setdefault(term, 0)
+                    doc_df_dict[term] += 1
+
+            for metadata in result.get("metadata", []):
+                hierarchies = metadata.get("hierarchies", "")
+                content = metadata.get("content", "")
+                terms = content.split()
+
+                for term in terms:
                     df = self.calculate_df(term, data_result)
-                    tf = self.calculate_tf(term, result)
+                    tf = self.calculate_tf(term, metadata, docno)
                     weight = self.calculate_weight(df, tf, n)
 
-                    # Update the hierarchies_dict
                     hierarchies_dict[hierarchies][term] = weight
-                    
-            # Update the smart_ltn_dict structure
+
             smart_ltn_dict[docno]["docno"] = docno
             smart_ltn_dict[docno]["hierarchies"] = dict(hierarchies_dict)
 
-        # Convert the defaultdict to a regular dictionary for a cleaner output
         smart_ltn_dict = dict(smart_ltn_dict)
-        
         return smart_ltn_dict
 
 
-        
 
     def calculate_SmartLtc_weight(self, tf, somme):
         weight = tf / sqrt(somme)
