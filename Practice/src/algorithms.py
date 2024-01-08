@@ -30,21 +30,41 @@ class Algorithms:
     def calculate_df(self, term, data_result):
         df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
         return df
+    
 
     def SmartLtn(self, data_result):
-        smart_ltn_dict = defaultdict(lambda: defaultdict(float))
+        smart_ltn_dict = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
+
         n = len(data_result)
         for result in data_result:
+            docno = result.get("docno", "")
+            hierarchies_dict = defaultdict(dict)
             for metadata in result.get("metadata", []):
+                hierarchies = metadata.get("hierarchies")
                 content = metadata.get("content", "")
                 terms = content.split()
+                print(hierarchies)
 
                 for term in terms:
+                    
                     df = self.calculate_df(term, data_result)
                     tf = self.calculate_tf(term, result)
                     weight = self.calculate_weight(df, tf, n)
-                    smart_ltn_dict[term][result["docno"]] = weight
+
+                    # Update the hierarchies_dict
+                    hierarchies_dict[hierarchies][term] = weight
+                    
+            # Update the smart_ltn_dict structure
+            smart_ltn_dict[docno]["docno"] = docno
+            smart_ltn_dict[docno]["hierarchies"] = dict(hierarchies_dict)
+
+        # Convert the defaultdict to a regular dictionary for a cleaner output
+        smart_ltn_dict = dict(smart_ltn_dict)
+        
         return smart_ltn_dict
+
+
+        
 
     def calculate_SmartLtc_weight(self, tf, somme):
         weight = tf / sqrt(somme)
@@ -78,11 +98,10 @@ class Algorithms:
     def BM25_df(self, term, data_result):
         df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
         return df
-    
+
     def BM25_tf(self, term, data_result):
         tf = data_result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {}).get(data_result["docno"], 0)
         return tf
-
 
     def BM25_weighting(self, data_result, k, b):
         BM25_result = defaultdict(lambda: defaultdict(float))
@@ -102,12 +121,15 @@ class Algorithms:
 
                 for term in terms:
                     df = self.BM25_df(term, data_result)
-                    tf = self.BM25_tf(term, result)
+                    tf = self.BM25_tf(term, data_result)
                     weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, dl)
                     BM25_result[term][docno] = weight
 
-        return BM25_result
-   
+        return BM25_result, avdl
+
+        
+    
+    
 
     def evaluate_query(self, query, smart, stem_d, stop_list):
         eval_query = defaultdict(lambda: defaultdict(float))

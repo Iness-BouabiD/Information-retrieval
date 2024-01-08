@@ -66,8 +66,6 @@ class MainApp:
     #
     #    args = parser.parse_args()
 
-        
-
 
         stop_des = int(input("Do you want to remove the stop words:\n1. Yes\n2. No\n"))
         if stop_des == 1:
@@ -80,6 +78,7 @@ class MainApp:
         else:
             self.stem_d = "nostem"
         
+        print(data_result)
         
         all_querys = self.load_queries()
 
@@ -89,21 +88,23 @@ class MainApp:
                 print("smart ltn")
                 smart_ltn = self.calculate_smart_ltn_weights(data_result)
                 #self.query_processing("ltn", smart_ltn, all_querys, run_index)
-                #print(smart_ltn)
+                print(smart_ltn)
                 print("-------------------------------------------------------------------")
 
             elif run == 2:
                 smart_ltc = self.calculate_smart_ltc_weights(data_result)
                 #self.query_processing("ltc", smart_ltc, all_querys, run_index)
-                #print(smart_ltc)
+                print(smart_ltc)
                 print("*******************************************************************")
-
+"""
             elif run == 3:
                 print(f"{run}")
                 k = float(input("Enter the value of k: "))
                 b = float(input("Enter the value of b: "))
                 bm25= self.calculate_BM25_weights(data_result,k, b)
                 print(bm25)
+
+  """              
 
 """
                     self.query_processing("BM25", BM25, all_querys, run_index, {"k": k, "b": b})
@@ -117,7 +118,7 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    folder_path = "../resources/XML-Coll-withSem/XML-Coll-withSem"
+    folder_path = "../resources/test"
 
     def extract_method_choice():
         return input("Choose extraction method:\n1. Whole document\n2. Extract from specific tags\n").lower()
