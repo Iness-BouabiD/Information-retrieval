@@ -35,8 +35,8 @@ class MainApp:
     def calculate_smart_ltn_weights(self,result_data):
         return self.algorithms.SmartLtn(result_data)
 
-    def calculate_smart_ltc_weights(self, smart_ltn_weights):
-        return self.algorithms.smart_ltc_weighting(smart_ltn_weights)
+    def calculate_smart_ltc_weights(self, result_data):
+        return self.algorithms.SmartLtc(result_data)
 
     def calculate_BM25_weights(self, k, b, avdl, dl):
         return self.algorithms.BM25_weighting(self.index, self.term_frequency, len(self.doc_lengths), k, b, avdl, dl)
@@ -80,19 +80,17 @@ class MainApp:
             if run == 1:
                 print("smart ltn")
                 smart_ltn = self.calculate_smart_ltn_weights(data_result)
-
+                #self.query_processing("ltn", smart_ltn, all_querys, run_index)
                 print(smart_ltn)
+                print("-------------------------------------------------------------------")
 
-
+            elif run == 2:
+                smart_ltc = self.calculate_smart_ltc_weights(data_result)
+                #self.query_processing("ltc", smart_ltc, all_querys, run_index)
+                print("*******************************************************************")
+                print(smart_ltc)
 
 """
-
-                    self.query_processing("ltn", smart_ltn, all_querys, run_index)
-
-                elif run == 2:
-                    smart_ltn = self.calculate_smart_ltn_weights()
-                    smart_ltc = self.calculate_smart_ltc_weights(smart_ltn)
-                    self.query_processing("ltc", smart_ltc, all_querys, run_index)
 
                 elif run == 3:
                     print(f"{run}")

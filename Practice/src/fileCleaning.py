@@ -19,7 +19,13 @@ class FileCleaning:
 
             
     def stop_words_and_stemming(self, stop = False, stem = False):
-        print("Removing stop words...")
+        if stop == True :
+            print("Removing stop words ...")
+        elif stem == True:
+            print("Stemming the words ...")
+        else:
+            print("Preprocessing")
+
         stop_list = self.get_stop_list()
 
         new_result_data = []

@@ -45,8 +45,7 @@ class Algorithms:
         return smart_ltn_dict
     
 
-    
-    def SmartLtc(self,tf, somme):
+    def calculate_SmartLtc_weight(self, tf, somme):
         weight = tf / sqrt(somme)
         return weight
 
@@ -59,18 +58,23 @@ class Algorithms:
         sums = dict(sorted(sums.items()))
         return sums
 
-    def smart_ltc_weighting(self,smart_ltn_dict):
+    def SmartLtc(self, data_result):
+        print("SMART LTCCCCCCC")
+        smart_ltn_dict = self.SmartLtn(data_result)
         smart_ltc_dict = defaultdict(lambda: defaultdict(float))
         s = self.somme_carre(smart_ltn_dict)
+
         for term, dictio in smart_ltn_dict.items():
             for docno in dictio:
                 tf = smart_ltn_dict[term][docno]
                 if s[docno] > 0:
-                    weight = self.SmartLtc(tf, s[docno])
+                    weight = self.calculate_SmartLtc_weight(tf, s[docno])
                 else:
                     weight = 0
                 smart_ltc_dict[term][docno] = weight
+
         return smart_ltc_dict
+
 
     def BM25_df(self,df, n):
         bm25df = log10((n - df + 0.5) / (df + 0.5))

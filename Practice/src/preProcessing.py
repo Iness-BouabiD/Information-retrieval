@@ -147,9 +147,10 @@ class Preprocessor:
             # ['bdy', 'p']
         
         file_counter = 0 
+        print("Preprocessing files...")
         for filename in os.listdir(self.folder_path):
             if filename.endswith(".xml"):
-                print(f"¨Preprocessing file :{filename}")
+                print(f"{filename}")
                 file_path = os.path.join(self.folder_path, filename)
 
                 if extraction_method == "tags":
