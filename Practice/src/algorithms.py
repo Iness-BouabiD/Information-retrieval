@@ -42,8 +42,7 @@ class Algorithms:
             docno = result.get("docno", "")
             hierarchies_dict = defaultdict(dict)
 
-            # Calculate document frequency for terms across the entire collection
-            doc_df_dict = {}  # Dictionary to store document frequency for the entire collection
+            doc_df_dict = {} 
             for metadata in result.get("metadata", []):
                 content = metadata.get("content", "")
                 terms = content.split()

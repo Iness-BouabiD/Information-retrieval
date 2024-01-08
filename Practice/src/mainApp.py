@@ -121,7 +121,7 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    folder_path = "../resources/test"
+    folder_path = "../resources/XML-Coll-withSem/XML-Coll-withSem"
 
     def extract_method_choice():
         return input("Choose extraction method:\n1. Whole document\n2. Extract from specific tags\n").lower()

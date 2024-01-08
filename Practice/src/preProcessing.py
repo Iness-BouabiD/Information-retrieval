@@ -100,7 +100,7 @@ class Preprocessor:
          
         # ranking -> p ==> /article/p1 ... 
         for tag in tags:
-
+                
             if tag in tree_structure:
                 
                 occurrences = tree_structure[tag]
