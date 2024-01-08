@@ -18,19 +18,13 @@ class Algorithms:
         weight = wtf * wdf
         return weight
 
-    def calculate_weight_bm25(self, df, tf, n, k, b, avdl, dl):
-        bm25df = log10((n - df + 0.5) / (df + 0.5))
-        bm25tf = ((tf * (k + 1)) / ((k * ((1 - b) + (b * (dl / avdl)))) + tf))
-        return bm25df * bm25tf
 
     def calculate_tf(self, term, metadata,docno):
         tf = metadata.get("indexation", [{}])[0]["term_frequency"].get(term, {}).get(docno)
-        
         return tf
     
     def calculate_df(self, term, data_result):
         df = sum(1 for result in data_result if any(term in metadata["indexation"][0]["index"] for metadata in result["metadata"]))
-        #print(f"document frequency of the term {term} is {df}")
         return df
         
 
@@ -68,8 +62,6 @@ class Algorithms:
 
         smart_ltn_dict = dict(smart_ltn_dict)
         return smart_ltn_dict
-
-
 
     def calculate_SmartLtc_weight(self, tf, somme):
         weight = tf / sqrt(somme)
@@ -116,55 +108,69 @@ class Algorithms:
         return smart_ltc_dict
 
 
-    """
-        def smart_ltc_weighting(self,smart_ltn_dict):
-            smart_ltc_dict = defaultdict(lambda: defaultdict(float))
-            s = self.somme_carre(smart_ltn_dict)
-            for term, dictio in smart_ltn_dict.items():
-                for docno in dictio:
-                    tf = smart_ltn_dict[term][docno]
-                    if s[docno] > 0:
-                        weight = self.SmartLtc(tf, s[docno])
-                    else:
-                        weight = 0
-                    smart_ltc_dict[term][docno] = weight
-            return smart_ltc_dict
+
+
+
     """
 
+    BM25 should be changed 
+    ******************************************************************
+    """
+    def calculate_weight_bm25(self, df, tf, n, k, b, avdl, dl):
+        bm25df = log10((n - df + 0.5) / (df + 0.5))
+        bm25tf = ((tf * (k + 1)) / ((k * ((1 - b) + (b * (dl / avdl)))) + tf))
+        return bm25df * bm25tf
+    
 
     def BM25_df(self, term, data_result):
-        df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
-        return df
+        df_values = defaultdict(int)
+
+        for result in data_result:
+            if term in result["metadata"][0]["indexation"][0]["index"]:
+                df_values[result["docno"]] += 1
+
+        return dict(df_values)
 
     def BM25_tf(self, term, data_result):
-        tf = data_result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {}).get(data_result["docno"], 0)
-        return tf
+        tf_values = defaultdict(lambda: defaultdict(int))
+
+        for result in data_result:
+            docno = result["docno"]
+            term_frequency = result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {})
+            tf_values[docno] = term_frequency.get(docno, 0)
+
+        return dict(tf_values)
 
     def BM25_weighting(self, data_result, k, b):
-        BM25_result = defaultdict(lambda: defaultdict(float))
+        BM25_result = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
         n = len(data_result)
-        total_doc_length = 0
-        for result in data_result:
-            total_doc_length += len(result["metadata"][0]["content"].split())
+        total_doc_length = sum(len(result["metadata"][0]["content"].split()) for result in data_result)
         avdl = total_doc_length / n
 
         for result in data_result:
             docno = result["docno"]
-            dl = len(result["metadata"][0]["content"].split())
+            BM25_result[docno]["docno"] = docno
+            BM25_result[docno]["hierarchies"] = defaultdict(dict)
 
+            dl = len(result["metadata"][0]["content"].split())
+            hierarchies_dict  = defaultdict(dict)
             for metadata in result.get("metadata", []):
                 content = metadata.get("content", "")
                 terms = content.split()
 
                 for term in terms:
-                    df = self.BM25_df(term, data_result)
-                    tf = self.BM25_tf(term, data_result)
+                    df = self.calculate_df(term, [result])
+                    tf = self.calculate_tf(term, metadata, docno)
                     weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, dl)
-                    BM25_result[term][docno] = weight
+                    BM25_result[docno]["hierarchies"][term] = weight
+                
+                    hierarchies_dict[metadata["hierarchies"]][term] = weight
 
-        return BM25_result, avdl
+            BM25_result[docno]["docno"] = docno
+            BM25_result[docno]["hierarchies"] = dict(hierarchies_dict)
 
-        
+        print(BM25_result)
+        return BM25_result
     
     
 
