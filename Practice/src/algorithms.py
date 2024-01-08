@@ -122,24 +122,6 @@ class Algorithms:
         return bm25df * bm25tf
     
 
-    def BM25_df(self, term, data_result):
-        df_values = defaultdict(int)
-
-        for result in data_result:
-            if term in result["metadata"][0]["indexation"][0]["index"]:
-                df_values[result["docno"]] += 1
-
-        return dict(df_values)
-
-    def BM25_tf(self, term, data_result):
-        tf_values = defaultdict(lambda: defaultdict(int))
-
-        for result in data_result:
-            docno = result["docno"]
-            term_frequency = result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {})
-            tf_values[docno] = term_frequency.get(docno, 0)
-
-        return dict(tf_values)
 
     def BM25_weighting(self, data_result, k, b):
         BM25_result = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
