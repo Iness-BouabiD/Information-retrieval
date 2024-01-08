@@ -98,13 +98,12 @@ class MainApp:
                 #print(smart_ltc)
                 print("*******************************************************************")
 
-        
-            elif run == 1:
+            elif run == 3:
                 print(f"{run}")
                 k = float(input("Enter the value of k: "))
                 b = float(input("Enter the value of b: "))
                 bm25= self.calculate_BM25_weights(data_result,k, b)
-                #print(bm25)
+                print(bm25)
 
 """
                     self.query_processing("BM25", BM25, all_querys, run_index, {"k": k, "b": b})
