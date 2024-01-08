@@ -15,9 +15,8 @@ class MainApp:
         self.stop_d = ""
         self.stem_d = ""
         #self.manage = Manage()
-        #self.algorithms = Algorithms()
+        self.algorithms = Algorithms()
         #self.doc_lengths = self.preprocessor.get_doc_length(self.index, self.term_frequency)
-
 
         
 
@@ -33,8 +32,8 @@ class MainApp:
                 all_querys[query_id] = query_text
         return all_querys
 
-    def calculate_smart_ltn_weights(self):
-        return self.algorithms.smart_ltn_weighting(self.index, self.term_frequency, len(self.doc_lengths))
+    def calculate_smart_ltn_weights(self,result_data):
+        return self.algorithms.SmartLtn(result_data)
 
     def calculate_smart_ltc_weights(self, smart_ltn_weights):
         return self.algorithms.smart_ltc_weighting(smart_ltn_weights)
@@ -75,16 +74,19 @@ class MainApp:
             self.stem_d = "nostem"
         print(data_result) 
         
-            #avdl = sum(self.doc_lengths.values()) / 10
-            #dl = self.doc_lengths
+        all_querys = self.load_queries()
 
-            #all_querys = self.load_queries()
+        for run in range(1, 5):
+            if run == 1:
+                print("smart ltn")
+                smart_ltn = self.calculate_smart_ltn_weights(data_result)
+
+                print(smart_ltn)
+
+
 
 """
-            for run in range(1, 5):
-                if run == 1:
-                    print("smart ltn")
-                    smart_ltn = self.calculate_smart_ltn_weights()
+
                     self.query_processing("ltn", smart_ltn, all_querys, run_index)
 
                 elif run == 2:
@@ -108,7 +110,7 @@ class MainApp:
 
 
 if __name__ == "__main__":
-    folder_path = "../resources/test/"
+    folder_path = "../resources/XML-Coll-withSem/XML-Coll-withSem"
 
     def extract_method_choice():
         return input("Choose extraction method:\n1. Whole document\n2. Extract from specific tags\n").lower()

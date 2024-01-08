@@ -139,7 +139,7 @@ class Preprocessor:
         print(f"Preprocessing files for case {extraction_method}")
         index = defaultdict(set)
         term_frequency = defaultdict(lambda: defaultdict(int))
-        limit = 5
+        limit = 200
         tags = ["article"]
         results = []
         if extraction_method == "tags":
@@ -149,7 +149,7 @@ class Preprocessor:
         file_counter = 0 
         for filename in os.listdir(self.folder_path):
             if filename.endswith(".xml"):
-                print(filename)
+                print(f"¨Preprocessing file :{filename}")
                 file_path = os.path.join(self.folder_path, filename)
 
                 if extraction_method == "tags":

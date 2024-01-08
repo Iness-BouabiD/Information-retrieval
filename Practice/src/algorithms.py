@@ -5,7 +5,8 @@ from nltk.stem import PorterStemmer
 class Algorithms:
     def __init__(self):
             ...
-    def SmartLtn(self,df, tf, n):
+
+    def calculate_weight(self, df, tf, n):
         if tf > 0:
             wtf = (1 + log10(tf))
         else:
@@ -16,17 +17,35 @@ class Algorithms:
             wdf = 0
         weight = wtf * wdf
         return weight
+    
+    #adapt it to be like the data result we have from the preprocessing, then get the term frequencu
+    def calculate_tf(self, term, result):
+        tf = result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {}).get(result["docno"], 0)
+        return tf
 
-    def smart_ltn_weighting(self,index, term_frequency, n):
+    #get the data using the dictionnary we created from preprocessing
+    def calculate_df(self, term, data_result):
+        df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
+        return df
+
+    #here we for only the new dictionnary with the weights and return it
+    def SmartLtn(self, data_result):
         smart_ltn_dict = defaultdict(lambda: defaultdict(float))
-        for term, postings_list in index.items():
-            df = len(postings_list)
-            for docno in postings_list:
-                tf = term_frequency[term][docno]
-                weight = self.SmartLtn(df, tf, n)
-                smart_ltn_dict[term][docno] = weight
-        return smart_ltn_dict
+        n = len(data_result)
+        for result in data_result:
+            for metadata in result.get("metadata", []):
+                content = metadata.get("content", "")
+                terms = content.split()
 
+                for term in terms:
+                    df = self.calculate_df(term, data_result)
+                    tf = self.calculate_tf(term, result)
+                    weight = self.calculate_weight(df, tf, n)
+                    smart_ltn_dict[term][result["docno"]] = weight
+        return smart_ltn_dict
+    
+
+    
     def SmartLtc(self,tf, somme):
         weight = tf / sqrt(somme)
         return weight
