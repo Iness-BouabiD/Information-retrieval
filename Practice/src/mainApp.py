@@ -11,26 +11,15 @@ class MainApp:
         self.preprocessor = Preprocessor(self.folder_path)
         self.result_data = self.preprocessor.preprocess_files(self.extraction_method) # case tags -> list
         self.cleaner = FileCleaning(self.result_data)
-        self.results_stop = self.cleaner.remove_stop_words()
-       
+        self.nbr_stopList = None
         self.stop_d = ""
         self.stem_d = ""
         #self.manage = Manage()
         #self.algorithms = Algorithms()
         #self.doc_lengths = self.preprocessor.get_doc_length(self.index, self.term_frequency)
 
-    def process_result_stop_words(self):
-        cleaner = FileCleaning(self.index, self.term_frequency)
-        
-        index_without_stopwords, term_frequency_without_stopwords, nbr_stopList = cleaner.remove_stopwords()
-        self.index, self.term_frequency = index_without_stopwords, term_frequency_without_stopwords
-        self.stop_d = f"stop{nbr_stopList}"
 
-    def process_result_stem(self):
-        cleaner_stemming = FileCleaning(self.index, self.term_frequency)
-        index_and_stemming, term_frequency_and_stemming = cleaner_stemming.perform_stemming()
-        self.index, self.term_frequency = index_and_stemming, term_frequency_and_stemming
-        self.stem_d = "porter"
+        
 
     def calculate_vocabulary_size(self):
         return len(self.index)
@@ -69,30 +58,29 @@ class MainApp:
     def update_counter(self, run_index):
         self.manage.update_counter(run_index)
 
- 
-"""
+
 
     def run(self):
-        self.doc_lengths = 1
-        #n = len(self.doc_lengths)
-        while True:
-            #run_index = self.manage.get_run_counter()
-            stop_des = int(input("Do you want to remove the stop words:\n1. Yes\n2. No\n"))
-            if stop_des == 1:
-                self.process_result_stop_words()
-            else:
-                self.stop_d = "nostop"
+        data_result = self.cleaner.stop_words_and_stemming(stop=False, stem=True)
+    
+        stop_des = int(input("Do you want to remove the stop words:\n1. Yes\n2. No\n"))
+        if stop_des == 1:
+            data_result = self.cleaner.stop_words_and_stemming(stop=True, stem=False)
+        else:
+            self.stop_d = "nostop"
+        stem_des = int(input("Do you want to stem the tokens:\n1. Yes\n2. No\n"))
+        if stem_des == 1:
+            data_result = self.cleaner.stop_words_and_stemming(stop=False, stem=True)
+        else:
+            self.stem_d = "nostem"
+        print(data_result) 
+        
+            #avdl = sum(self.doc_lengths.values()) / 10
+            #dl = self.doc_lengths
 
-            stem_des = int(input("Do you want to stem the tokens:\n1. Yes\n2. No\n"))
-            if stem_des == 1:
-                self.process_result_stem(re)
-            else:
-                self.stem_d = "nostem"
-            avdl = sum(self.doc_lengths.values()) / 10
-            dl = self.doc_lengths
+            #all_querys = self.load_queries()
 
-            all_querys = self.load_queries()
-
+"""
             for run in range(1, 5):
                 if run == 1:
                     print("smart ltn")
@@ -116,8 +104,8 @@ class MainApp:
             run_again = input("Do you want to run again? (yes/no): ").lower()
             if run_again != "yes":
                 break
-
 """
+
 
 if __name__ == "__main__":
     folder_path = "../resources/test/"
@@ -136,4 +124,4 @@ if __name__ == "__main__":
     
     app = MainApp(folder_path,extraction_method)
             
-    #app.run()
+    app.run()

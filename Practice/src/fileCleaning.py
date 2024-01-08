@@ -5,16 +5,22 @@ class FileCleaning:
     def __init__(self, result_data):
         self.result_data = result_data
 
-            
-    def remove_stop_words(self):
-        print(self.result_data)
-        print("--------REMOVE STOP WORDS------------------")
-
+    
+    def get_stop_list(self):
         stop_list = []
         with open('../resources/stop-words-english4.txt', 'r', encoding='utf-8') as stop_file:
             for line in stop_file:
                 word = line.strip()
                 stop_list.append(word)
+        return stop_list
+
+    def get_stop_list_lenght(self):
+        return len(self.get_stop_list())
+
+            
+    def stop_words_and_stemming(self, stop = False, stem = False):
+        print("Removing stop words...")
+        stop_list = self.get_stop_list()
 
         new_result_data = []
         for result in self.result_data:
@@ -25,40 +31,30 @@ class FileCleaning:
             for metadata in result.get("metadata", []):
                 content = metadata.get("content", "")
                 terms = content.split()
+                stemmer = PorterStemmer()
 
-                # Remove stop words from the content
-                filtered_terms = [term for term in terms if term.lower() not in stop_list]
+                if stop == True and stem ==False :
+                    filtered_terms = [term for term in terms if term.lower() not in stop_list]
+                elif stem == True and stop ==False:
+                    filtered_terms = [stemmer.stem(term) for term in terms]
+                elif stop == True and stem == True:
+                    filtered_stop = [term for term in terms if term.lower() not in stop_list]
+                    filtered_terms = [stemmer.stem(term) for term in filtered_stop]
+
                 metadata["content"] = ' '.join(filtered_terms)
 
-                # Update the indexation dictionary
                 indexation = {"index": {}, "term_frequency": defaultdict(int)}
                 for term in filtered_terms:
                     local_index[term].add(result["docno"])
                     local_term_frequency[term][result["docno"]] += 1
 
-                # Update the overall indexation
                 indexation["index"] = dict(local_index)
                 indexation["term_frequency"] = dict(local_term_frequency)
-                metadata["indexation"] = [indexation]  # Only one entry for indexation
+                metadata["indexation"] = [indexation] 
                 new_result["metadata"].append(metadata)
 
             new_result_data.append(new_result)
 
-        print(new_result_data)
-        print("--------REMOVE STOP WORDS------------------")
+      
         return new_result_data
                 
-
-
-"""
-    def perform_stemming(self):
-        stemmer = PorterStemmer()
-        new_index = defaultdict(set)
-        new_term_frequency = defaultdict(lambda: defaultdict(int))
-        for term, document_list in self.index.items():
-            stemmed_term = stemmer.stem(term)
-            for docno in document_list:
-                new_index[stemmed_term].add(docno)
-                new_term_frequency[stemmed_term][docno] += self.term_frequency[term][docno]
-        return new_index, new_term_frequency
-"""
