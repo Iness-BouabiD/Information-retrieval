@@ -78,10 +78,11 @@ class Algorithms:
     def BM25_df(self, term, data_result):
         df = sum(1 for result in data_result if term in result["metadata"][0]["indexation"][0]["index"])
         return df
-
+    
     def BM25_tf(self, term, data_result):
         tf = data_result["metadata"][0]["indexation"][0]["term_frequency"].get(term, {}).get(data_result["docno"], 0)
         return tf
+
 
     def BM25_weighting(self, data_result, k, b):
         BM25_result = defaultdict(lambda: defaultdict(float))
@@ -101,15 +102,12 @@ class Algorithms:
 
                 for term in terms:
                     df = self.BM25_df(term, data_result)
-                    tf = self.BM25_tf(term, data_result)
+                    tf = self.BM25_tf(term, result)
                     weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, dl)
                     BM25_result[term][docno] = weight
 
-        return BM25_result, avdl
-
-        
-    
-    
+        return BM25_result
+   
 
     def evaluate_query(self, query, smart, stem_d, stop_list):
         eval_query = defaultdict(lambda: defaultdict(float))

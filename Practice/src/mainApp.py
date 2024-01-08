@@ -84,26 +84,27 @@ class MainApp:
         all_querys = self.load_queries()
 
         for run in range(1, 5):
+            
             if run == 1:
                 print("smart ltn")
                 smart_ltn = self.calculate_smart_ltn_weights(data_result)
                 #self.query_processing("ltn", smart_ltn, all_querys, run_index)
-                print(smart_ltn)
+                #print(smart_ltn)
                 print("-------------------------------------------------------------------")
 
             elif run == 2:
                 smart_ltc = self.calculate_smart_ltc_weights(data_result)
                 #self.query_processing("ltc", smart_ltc, all_querys, run_index)
+                #print(smart_ltc)
                 print("*******************************************************************")
-                print(smart_ltc)
 
-
-            elif run == 3:
+        
+            elif run == 1:
                 print(f"{run}")
                 k = float(input("Enter the value of k: "))
                 b = float(input("Enter the value of b: "))
                 bm25= self.calculate_BM25_weights(data_result,k, b)
-                print(bm25)
+                #print(bm25)
 
 """
                     self.query_processing("BM25", BM25, all_querys, run_index, {"k": k, "b": b})
