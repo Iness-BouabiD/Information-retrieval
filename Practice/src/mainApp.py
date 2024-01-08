@@ -3,7 +3,7 @@ from preProcessing import Preprocessor
 from fileCleaning import FileCleaning
 from manage import Manage
 from algorithms import Algorithms
-
+import argparse
 class MainApp:
     def __init__(self, folder_path,extract_method):
         self.extraction_method = extraction_method
@@ -38,8 +38,8 @@ class MainApp:
     def calculate_smart_ltc_weights(self, result_data):
         return self.algorithms.SmartLtc(result_data)
 
-    def calculate_BM25_weights(self, k, b, avdl, dl):
-        return self.algorithms.BM25_weighting(self.index, self.term_frequency, len(self.doc_lengths), k, b, avdl, dl)
+    def calculate_BM25_weights(self,result_data,k,b):
+        return self.algorithms.BM25_weighting(result_data,k,b)
 
     def query_processing(self, algorithm, weights, all_querys, run_index, params=None):
         stop_list = []
@@ -60,8 +60,15 @@ class MainApp:
 
 
     def run(self):
-        data_result = self.cleaner.stop_words_and_stemming(stop=False, stem=True)
-    
+    #    parser = argparse.ArgumentParser(description="CoopCycle restaurants query program:")
+    #    parser.add_argument("--stop", choice=["True","False"],action = "store_true", help="Removing stop words")
+    #    parser.add_argument("--stem", choice=["True","False"], action="store_true", help="Stemming the words")
+    #
+    #    args = parser.parse_args()
+
+        
+
+
         stop_des = int(input("Do you want to remove the stop words:\n1. Yes\n2. No\n"))
         if stop_des == 1:
             data_result = self.cleaner.stop_words_and_stemming(stop=True, stem=False)
@@ -72,7 +79,7 @@ class MainApp:
             data_result = self.cleaner.stop_words_and_stemming(stop=False, stem=True)
         else:
             self.stem_d = "nostem"
-        print(data_result) 
+        
         
         all_querys = self.load_queries()
 
@@ -90,13 +97,15 @@ class MainApp:
                 print("*******************************************************************")
                 print(smart_ltc)
 
-"""
 
-                elif run == 3:
-                    print(f"{run}")
-                    k = float(input("Enter the value of k: "))
-                    b = float(input("Enter the value of b: "))
-                    BM25 = self.calculate_BM25_weights(k, b, avdl, dl)
+            elif run == 3:
+                print(f"{run}")
+                k = float(input("Enter the value of k: "))
+                b = float(input("Enter the value of b: "))
+                bm25= self.calculate_BM25_weights(data_result,k, b)
+                print(bm25)
+
+"""
                     self.query_processing("BM25", BM25, all_querys, run_index, {"k": k, "b": b})
 
                 self.update_counter(run_index)
