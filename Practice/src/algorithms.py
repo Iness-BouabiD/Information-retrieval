@@ -124,20 +124,22 @@ class Algorithms:
     
 
 
-
     def BM25_weighting(self, data_result, k, b):
         BM25_result = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
         n = len(data_result)
-        #total_doc_length = sum(len(result["metadata"][0]["content"].split()) for result in data_result)
-        #avdl = total_doc_length / n
+        
+        total_doc_length = sum(len(result.get("metadata", {}).get("content", "").split()) for result in data_result)
+        avdl = total_doc_length / n
+        print(total_doc_length)
+        
         for result in data_result:
-            
-            docno = result["docno"]
+            docno = result.get("docno", "")
             BM25_result[docno]["docno"] = docno
             BM25_result[docno]["hierarchies"] = defaultdict(dict)
 
-            dl = len(result["metadata"][0]["content"].split())
-            hierarchies_dict  = defaultdict(dict)
+            dl = len(result.get("metadata", {}).get("content", "").split())
+            hierarchies_dict = defaultdict(dict)
+
             for metadata in result.get("metadata", []):
                 content = metadata.get("content", "")
                 terms = content.split()
@@ -145,16 +147,17 @@ class Algorithms:
                 for term in terms:
                     df = self.calculate_df(term, [result])
                     tf = self.calculate_tf(term, metadata, docno)
-                    #weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, dl)
-                    #BM25_result[docno]["hierarchies"][term] = weight
-                
-                    #hierarchies_dict[metadata["hierarchies"]][term] = weight
+                    # weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, dl)
+                    # BM25_result[docno]["hierarchies"][term] = weight
 
-            #BM25_result[docno]["docno"] = docno
-            #BM25_result[docno]["hierarchies"] = dict(hierarchies_dict)
+                    # hierarchies_dict[metadata["hierarchies"]][term] = weight
+
+            # BM25_result[docno]["docno"] = docno
+            # BM25_result[docno]["hierarchies"] = dict(hierarchies_dict)
 
         print(BM25_result)
         return BM25_result
+
     
     
 
