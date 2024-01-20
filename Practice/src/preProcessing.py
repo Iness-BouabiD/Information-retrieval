@@ -13,7 +13,6 @@ class Preprocessor:
     
    
     def get_doc_length(self, index, term_frequency):
-        print(term_frequency)
         doc_length = defaultdict(int)
         for term, postings_list in index.items():
             for docno in postings_list:
@@ -83,7 +82,7 @@ class Preprocessor:
         return tag_indices
 
     #/article/bdy[1]/p[1]/sec[1] 
-    
+    # NEVER NEST != TRUE HEHEHEHEHE why ?
     def extract_from_tags(self, file_path, tags):
         local_index = defaultdict(set)
         local_term_frequency = defaultdict(lambda: defaultdict(int))
@@ -147,10 +146,10 @@ class Preprocessor:
             # ['bdy', 'p']
         
         file_counter = 0 
-        print("Preprocessing files...")
+       
         for filename in os.listdir(self.folder_path):
             if filename.endswith(".xml"):
-                print(f"{filename}")
+               
                 file_path = os.path.join(self.folder_path, filename)
 
                 if extraction_method == "tags":

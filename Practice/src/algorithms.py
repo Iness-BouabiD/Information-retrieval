@@ -25,7 +25,6 @@ class Algorithms:
     
     def calculate_df(self, term, data_result):
         df = sum(1 for result in data_result if any(term in metadata.get("indexation", [{}])[0]["index"] for metadata in result["metadata"]))
-        print(f"document frequency for term {term} is {df}")
         return df
         
 
@@ -82,7 +81,7 @@ class Algorithms:
     def SmartLtc(self, smart_ltn_dict, data_result):
         smart_ltc_dict = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
         s = self.somme_carre(smart_ltn_dict)  # Calculate the sum of squares
-        print(s)
+       
         for result in data_result:
             docno = result.get("docno", "")
             hierarchies_dict = defaultdict(dict)
@@ -105,7 +104,7 @@ class Algorithms:
             smart_ltc_dict[docno]["docno"] = docno
             smart_ltc_dict[docno]["hierarchies"] = dict(hierarchies_dict)
 
-        print(smart_ltc_dict)
+       
         return smart_ltc_dict
 
 
@@ -124,20 +123,38 @@ class Algorithms:
     
 
 
-    def BM25_weighting(self, data_result, k, b):
-        BM25_result = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
-        n = len(data_result)
-        
-        total_doc_length = sum(len(result.get("metadata", {}).get("content", "").split()) for result in data_result)
-        avdl = total_doc_length / n
-        print(total_doc_length)
-        
+    def calculate_total_length(self, data_result):
+        total_length = 0
+        list_of_lengths = []
+
         for result in data_result:
             docno = result.get("docno", "")
+            for metadata in result.get("metadata", []):
+                content_list = metadata.get("content", "").split()
+                total_length += len(content_list)
+                list_of_lengths.append((docno, total_length))
+
+        return list_of_lengths
+    
+    def calculate_average_document_length(self, list_of_lengths):
+        total_lengths_sum = sum(length for _, length in list_of_lengths)
+        num_documents = len(list_of_lengths)
+        avdl = total_lengths_sum / num_documents if num_documents > 0 else 0
+        return avdl
+    
+
+    def BM25_weighting(self, data_result, k, b):
+        list_of_lengths = self.calculate_total_length(data_result)
+        avdl = self.calculate_average_document_length(list_of_lengths)
+        BM25_result = defaultdict(lambda: {"docno": "", "hierarchies": defaultdict(dict)})
+        n = len(data_result)
+
+        for result in data_result:
+            docno = result.get("docno", "")
+            total_length = next((length for doc, length in list_of_lengths if doc == docno), 0)
+
             BM25_result[docno]["docno"] = docno
             BM25_result[docno]["hierarchies"] = defaultdict(dict)
-
-            dl = len(result.get("metadata", {}).get("content", "").split())
             hierarchies_dict = defaultdict(dict)
 
             for metadata in result.get("metadata", []):
@@ -147,17 +164,13 @@ class Algorithms:
                 for term in terms:
                     df = self.calculate_df(term, [result])
                     tf = self.calculate_tf(term, metadata, docno)
-                    # weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, dl)
-                    # BM25_result[docno]["hierarchies"][term] = weight
+                    weight = self.calculate_weight_bm25(df, tf, n, k, b, avdl, total_length)
+                    BM25_result[docno]["hierarchies"][term] = weight
+                    hierarchies_dict[metadata["hierarchies"]][term] = weight
 
-                    # hierarchies_dict[metadata["hierarchies"]][term] = weight
-
-            # BM25_result[docno]["docno"] = docno
-            # BM25_result[docno]["hierarchies"] = dict(hierarchies_dict)
-
-        print(BM25_result)
+            BM25_result[docno]["hierarchies"] = dict(hierarchies_dict)
+        
         return BM25_result
-
     
     
 

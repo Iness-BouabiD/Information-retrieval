@@ -48,7 +48,7 @@ class FileCleaning:
                     filtered_terms = [stemmer.stem(term) for term in filtered_stop]
                 elif stop==False  and stem ==False:
                     return self.result_data
-
+             
                 metadata["content"] = ' '.join(filtered_terms)
 
                 indexation = {"index": {}, "term_frequency": defaultdict(int)}
